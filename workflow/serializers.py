@@ -11,8 +11,10 @@ class ProductSerializer(serializers.ModelSerializer):
         product = Products.objects.filter(sku=validated_data.get('sku')).first()
         if not product:
             instance = Products.objects.create(**validated_data)
+            print("-------created--------")
         else:
             instance = super(ProductSerializer, self).update(product, validated_data)
+            print("-------updated--------")
         return instance
 
     class Meta:
