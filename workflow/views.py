@@ -6,10 +6,14 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from workflow.serializers import ProductSerializer
 from workflow.models import Products
 from workflow.pagination import StandardResultsSetPagination
+from workflow.webhook import webhook
+
 
 
 class ProductsListView(ListCreateAPIView):
@@ -36,6 +40,7 @@ class ProductsListView(ListCreateAPIView):
                 "successful": True,
                 "error": ""
             }
+            webhook("created", data)
             return Response(data=data, status=status.HTTP_201_CREATED)
 
         data = {
@@ -63,14 +68,14 @@ class ProductsDetailView(APIView):
     Retrieve, update or delete a Product instance.
     """
 
-    def get_object(self, product_uuid):
+    def get_object(self, product_id):
         try:
-            return Products.objects.get(uuid=product_uuid)
+            return Products.objects.get(uuid=product_id)
         except Products.DoesNotExist:
             raise Http404
 
-    def get(self, request,product_uuid):
-        product = self.get_object(product_uuid)
+    def get(self, request,product_id):
+        product = self.get_object(product_id)
         serializer = ProductSerializer(product)
         data = {
             "message": "Product retrieved successfully",
@@ -80,8 +85,8 @@ class ProductsDetailView(APIView):
         }
         return Response(data=data)
 
-    def patch(self, request, product_uuid):
-        product = self.get_object(product_uuid)
+    def patch(self, request, product_id):
+        product = self.get_object(product_id)
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -91,6 +96,7 @@ class ProductsDetailView(APIView):
                 "successful": True,
                 "error": ""
             }
+            webhook("updated", data)
             return Response(data=data, status=status.HTTP_201_CREATED)
 
         data = {
@@ -101,8 +107,8 @@ class ProductsDetailView(APIView):
         }
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, product_uuid):
-        product = self.get_object(product_uuid)
+    def delete(self, request, product_id):
+        product = self.get_object(product_id)
         product.delete()
         data = {
             "message": "Product deleted successfully",
@@ -111,3 +117,49 @@ class ProductsDetailView(APIView):
             "error": ""
         }
         return Response(data=data, status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductsBulkUploadView(APIView):
+
+    def post(self, request):
+        from workflow.utils import read_products_from_csv
+        from workflow.tasks import save_bulk_products_into_db
+
+        product_file = request.data['file']
+        products = read_products_from_csv(product_file)
+        save_bulk_products_into_db.delay(products)
+        data = {
+            "message": "Product uploading ...",
+            "data": [],
+            "successful": True,
+            "error": ""
+        }
+
+        return Response(data=data)
+
+
+class ProductFilterList(generics.ListAPIView):
+    queryset = Products.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'description', 'active', 'sku']
+
+class ProductActiveFilterList(generics.ListAPIView):
+    queryset = Products.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['active']
+
+
+class WebhookView(APIView):
+
+    def post(self, request):
+        data = request.data
+        data = {
+            "message": "Callback sent successful",
+            "data": data,
+            "successful": True,
+            "error": ""
+        }
+
+        return Response(data=data)
