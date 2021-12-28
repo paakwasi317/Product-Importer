@@ -3,7 +3,7 @@ import json
 
 
 def webhook(action: str, data: dict):
-    webhook_url = f"http://127.0.0.1:8000/workflow/webhook?action={action}"
+    webhook_url = f"http://104.131.14.144/workflow/webhook?action={action}"
     payload = {
         "data": data
     }
