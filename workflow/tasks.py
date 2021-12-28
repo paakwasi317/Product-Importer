@@ -8,15 +8,11 @@ from workflow.utils import read_products_from_csv
 
 
 @shared_task
-def save_bulk_products_into_db(file_name):
-    file = default_storage.open(file_name)
-    products = read_products_from_csv(file)
+def save_bulk_products_into_db(products):
     serializer = ProductSerializer(data=products, many=True)
 
     if serializer.is_valid():
         serializer.save()
-
-    default_storage.delete(file_name)
 
     data = {
         "message": "All products uploaded successfully",
