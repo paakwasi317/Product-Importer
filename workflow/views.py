@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.files.storage import default_storage
+import os
 
 from workflow.serializers import ProductSerializer
 from workflow.models import Products
@@ -20,7 +22,7 @@ class ProductsListView(ListCreateAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get(self, request):
-        products = Products.objects.all()
+        products = Products.objects.all().order_by('-created_at')
         page = self.paginate_queryset(products)
         if page is not None:
             serializer = ProductSerializer(page, many=True)
@@ -126,8 +128,9 @@ class ProductsBulkUploadView(APIView):
         from workflow.tasks import save_bulk_products_into_db
 
         product_file = request.data['file']
-        products = read_products_from_csv(product_file)
-        save_bulk_products_into_db.delay(products)
+        path = os.getcwd() + f"/MEDIA/{product_file.name}"
+        file_name = default_storage.save(path, product_file)
+        save_bulk_products_into_db.delay(file_name)
         data = {
             "message": "Product uploading ...",
             "data": [],
@@ -139,13 +142,13 @@ class ProductsBulkUploadView(APIView):
 
 
 class ProductFilterList(generics.ListAPIView):
-    queryset = Products.objects.all()
+    queryset = Products.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description', 'active', 'sku']
 
 class ProductActiveFilterList(generics.ListAPIView):
-    queryset = Products.objects.all()
+    queryset = Products.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['active']
