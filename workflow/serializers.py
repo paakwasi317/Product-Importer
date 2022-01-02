@@ -5,7 +5,7 @@ from workflow.models import Products
 class ProductSerializer(serializers.ModelSerializer):
 
     """
-        overriding create method to over-write duplicate products with same sku
+        Overriding create method to over-write duplicate products with same `sku`
     """
     def create(self, validated_data):
         product = Products.objects.filter(sku=validated_data.get('sku')).first()

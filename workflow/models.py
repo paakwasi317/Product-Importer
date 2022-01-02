@@ -4,8 +4,8 @@ import uuid
 
 class ResourceModel(models.Model):
     """
-    An abstract base class model that provides self-managed `id`, `is_deleted`, `created_at` and
-    `modified_at` fields.
+        An abstract base class model that provides self-managed `id`, `is_deleted`, `created_at` and
+        `updated_at` fields.
     """
     uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name="Public Identifier")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,7 +17,8 @@ class ResourceModel(models.Model):
 
 class Products(ResourceModel):
     """
-    This table contains the products of ACME LtD
+        This table contains the products of ACME LtD
+        with `sku` being a unique field.
     """
     name = models.TextField(null=True, blank=True)
     sku = models.TextField(null=True, blank=True)
