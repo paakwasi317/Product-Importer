@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-k**h3^32zw@$m=m#yaj+d=lm=f&2vg!)pm%8k=)f2sp0@)(t8i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['acme.symliq.com', 'localhost', '127.0.0.1', '104.131.14.144']
 
@@ -51,7 +51,6 @@ CORS_ALLOW_HEADERS = [
     "Access-Control-Allow-Origin"
 ]
 CORS_ALLOW_ALL_ORIGINS = True
-# APPEND_SLASH = False
 
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",

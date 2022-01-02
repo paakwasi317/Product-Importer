@@ -16,8 +16,13 @@ from workflow.pagination import StandardResultsSetPagination
 from workflow.webhook import webhook
 
 
-
 class ProductsListView(ListCreateAPIView):
+    """
+        This view allows the following:
+            - GET Method: get all products with pagination
+            - POST Method: create a new product
+            - DELETE Method: bulk delete products
+    """
     pagination_class = StandardResultsSetPagination
 
     def get(self, request):
@@ -66,7 +71,8 @@ class ProductsListView(ListCreateAPIView):
 
 class ProductsDetailView(APIView):
     """
-    Retrieve, update or delete a Product instance.
+        This view allows to Retrieve, update or delete
+        a Product instance.
     """
 
     def get_object(self, product_id):
@@ -75,7 +81,7 @@ class ProductsDetailView(APIView):
         except Products.DoesNotExist:
             raise Http404
 
-    def get(self, request,product_id):
+    def get(self, request, product_id):
         product = self.get_object(product_id)
         serializer = ProductSerializer(product)
         data = {
@@ -121,6 +127,10 @@ class ProductsDetailView(APIView):
 
 
 class ProductsBulkUploadView(APIView):
+    """"
+        This view is responsible for bulk-uploading of
+        products
+    """
 
     def post(self, request):
         from workflow.utils import read_products_from_csv
@@ -128,7 +138,7 @@ class ProductsBulkUploadView(APIView):
 
         product_file = request.data['file']
         products = read_products_from_csv(product_file)
-        save_bulk_products_into_db.delay(products)
+        save_bulk_products_into_db.delay(products)  # saves products into db with async to prevent timeout
         data = {
             "message": "Product uploading ...",
             "data": [],
@@ -140,12 +150,23 @@ class ProductsBulkUploadView(APIView):
 
 
 class ProductFilterList(generics.ListAPIView):
+    """
+        This view is responsible for searching for products by
+        `name`, `description`, `active` and `sku`. It's more of
+        the general search filter
+    """
     queryset = Products.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description', 'active', 'sku']
 
+
 class ProductActiveFilterList(generics.ListAPIView):
+    """
+        This view is responsible for searching for product
+        by `active` field. It helps to filter products by active or
+        inactive products
+    """
     queryset = Products.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
@@ -153,6 +174,9 @@ class ProductActiveFilterList(generics.ListAPIView):
 
 
 class WebhookView(APIView):
+    """
+        This view is responsible for the webhooks
+    """
 
     def post(self, request):
         data = request.data

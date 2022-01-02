@@ -1,9 +1,11 @@
 import requests
 import json
+import os
 
 
+# webhook is sent everytime a product is created or updated
 def webhook(action: str, data: dict):
-    webhook_url = f"https://acme.symliq.com/workflow/webhook?action={action}"
+    webhook_url = f"{os.getenv('HOST_URL')}/workflow/webhook?action={action}"
     payload = {
         "data": data
     }
