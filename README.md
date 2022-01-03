@@ -24,6 +24,36 @@ sudo pip install virtualenv # Install the virtual environment.
 sudo pip install -r requirements.txt # Install modules from requirements.txt
 ```
 
+### Installing RabbitMQ
+
+**Debian linux**
+```bash
+#!bin/bash
+apt-get install -y erlang
+apt-get install rabbitmq-server
+```
+**Mac**
+```
+#!bin/bash
+brew install rabbitmq
+vim ~/.bash_profile
+export PATH=$PATH:/usr/local/sbin # Add it to the bottom of the file
+```
+
+### Starting RabbitMQ service
+
+```bash
+systemctl enable rabbitmq-server
+systemctl start rabbitmq-server
+systemctl status rabbitmq-server
+```
+
+### Starting The Worker Process
+
+```bash
+celery -A product_importer worker -l info
+```
+
 ### Run application locally
 ```bash
 # post installation of modules from requirements.txt
