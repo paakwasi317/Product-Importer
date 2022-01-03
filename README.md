@@ -12,7 +12,7 @@ Accept all defaults but set `Version tag prefix?` to "v"
 
 ### Creating branches
 Create branches with git flow. See the following examples on how to create branches for features or hotfixes:  
-```
+```bash
 git flow feature start feature-name # to work on a feature addition
 git flow hotfix start bug-resolution-name # to work on a hotfix/bug fix
 ```
@@ -34,7 +34,7 @@ apt-get install -y erlang
 apt-get install rabbitmq-server
 ```
 **Mac**
-```
+```bash
 #!bin/bash
 brew install rabbitmq
 vim ~/.bash_profile
@@ -58,7 +58,7 @@ celery -A product_importer worker -l info
 ### Run application locally
 ```bash
 # post installation of modules from requirements.txt
-cd product_import
+cd product_importer
 python manage.py migrate # This will run all database migrations
 python manage.py runserver # This will run the local server by default on port 8000
 ```
