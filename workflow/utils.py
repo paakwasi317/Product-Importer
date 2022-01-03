@@ -1,6 +1,7 @@
 import pandas as pd
 import pusher
 import os
+import random
 
 from workflow.serializers import ProductSerializer
 
@@ -33,4 +34,6 @@ def save_into_db_with_serializer(product):
     """ Serializer to save products to database """
     serializer = ProductSerializer(data=product)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(
+            active=bool(random.getrandbits(1))  # This randomizes active and inactive products
+        )
