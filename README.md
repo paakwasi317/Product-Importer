@@ -64,3 +64,7 @@ python manage.py runserver # This will run the local server by default on port 8
 ```
 
 ### Running Tests
+Run this command to run tests:
+```bash
+pytest workflow/tests.py
+```
