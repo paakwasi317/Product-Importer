@@ -15,7 +15,7 @@ urlpatterns = [
     # FILTER PRODUCTS BY ALL FIELDS
     path("product/values/filter", ProductFilterList.as_view(), name="Product-Filter-View"),
     # FILTER PRODUCTS BY STATUS(ACTIVE || INACTIVE)
-    path("product/status/filter", ProductActiveFilterList.as_view(), name="Product-Filter-View"),
+    path("product/status/filter", ProductActiveFilterList.as_view(), name="Product-Status-Filter-View"),
     # WEBHOOK URL
     path("webhook", WebhookView.as_view(), name="Webhook-View"),
 ]
