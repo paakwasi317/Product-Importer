@@ -84,6 +84,14 @@ def test_update_one_product(api_client, create_new_product_obj):  # Test for upd
 
 
 @pytest.mark.django_db
+def test_delete_one_product(api_client, create_new_product_obj):  # Test for deleting a product
+    url = reverse('Product-Detail-View', kwargs={'product_id': create_new_product_obj.uuid})
+    client = api_client
+    response = client.delete(url, format='json')
+    assert response.status_code == 204
+
+
+@pytest.mark.django_db
 def test_filter_product(api_client):  # Test search by `name`, `description`, `sku`
     url = reverse('Product-Filter-View')
     client = api_client
