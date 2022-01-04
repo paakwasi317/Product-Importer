@@ -1,6 +1,8 @@
 # Product Importer for ACME
 This is the code repository for ACME Product Importer REST API. This allows a user to do bulk upload of products(about half a million) into a database without a frontend timeout.
-It is made possible as a result of celery which is an asynchronous task queue based on distributed message passing. Task queues are used as a strategy to distribute the workload between threads/machines
+It is made possible as a result of celery which is an asynchronous task queue based on distributed message passing. Task queues are used as a strategy to distribute the workload between threads/machines. In the link below is the API documentation:
+
+https://documenter.getpostman.com/view/8255827/UVXbtz4k
 
 ### Setup
 1. Clone this repository
